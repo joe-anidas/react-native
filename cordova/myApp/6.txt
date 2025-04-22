@@ -1,0 +1,88 @@
+EX NO: 6
+DATE:  		
+
+DESIGN AND DEVELOP AN ANDROID APPLICATION USING APACHE CORDOVA TO FIND AND DISPLAY THE CURRENT LOCATION OF THE USER.
+
+
+AIM:
+	To design and develop an android application using Apache Cordova to find and display the current location of the user. 
+PROCEDURE:
+Install Apache Cordova globally using npm.
+>npm install -g cordova
+Create a new Cordova project for the location app.
+>cordova create LocationApp com.example.locationapp LocationApp
+Change directory to the newly created project folder.
+>cd LocationApp
+Add Android platform to your Cordova project.
+>cordova platform add android
+Install the geolocation plugin to access the device's location.
+>cordova plugin add cordova-plugin-geolocation
+Build the project for Android platform.
+>cordova build android
+Modify index.html, index.css, and index.js for UI and location functionality.
+Run the app on an Android emulator or device.
+>cordova run android
+
+
+
+
+CODE:
+
+//index.html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Location App</title>
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h2 class="heading">Location App</h2>
+        <button class="button" onclick="getLocation()">Get Location</button>
+        <div id="location" class="location-info"></div>
+    </div>
+</body>
+</html>
+
+//index.css
+.container {
+    width: 80%;
+    margin: 0 auto;
+    text-align: center;}
+.heading {
+    font-size: 24px;
+    color: #333;}
+.button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 18px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-top: 20px;}
+.button:hover {
+    background-color: #0056b3;}
+.location-info {
+    margin-top: 20px;
+    font-size: 18px;}
+
+//index.js
+function getLocation() {
+    navigator.geolocation.getCurrentPosition(onSuccess, onError);}
+
+function onSuccess(position) {
+    var latitude = position.coords.latitude;
+    var longitude = position.coords.longitude;
+    document.getElementById('location').innerHTML = 'Latitude: ' + latitude + '<br>Longitude: ' + longitude;}
+
+function onError(error) {
+    alert('Error occurred. Code: ' + error.code + '\nMessage: ' + error.message);}
+
+OUTPUT:
+
+RESULT:           
+              
+

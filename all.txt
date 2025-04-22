@@ -1,0 +1,526 @@
+
+
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+
+const App = () => {
+    const [age, setAge] = useState('');
+    const [height, setHeight] = useState('');
+    const [weight, setWeight] = useState('');
+    const [gender, setGender] = useState('');
+    const [bmiResult, setBmiResult] = useState(null);
+
+    const validateForm = () => {
+        if (!age || !height || !weight || !gender) {
+            alert('All fields are required!');
+        } else {
+            countBmi();
+        }
+    };
+
+    const countBmi = () => {
+        const bmi = (parseFloat(weight) / ((parseFloat(height) / 100) ** 2)).toFixed(2);
+
+        let result = '';
+        if (bmi < 18.5) {
+            result = 'Underweight';
+        } else if (bmi >= 18.5 && bmi <= 24.9) {
+            result = 'Healthy';
+        } else if (bmi >= 25 && bmi <= 29.9) {
+            result = 'Overweight';
+        } else if (bmi >= 30 && bmi <= 34.9) {
+            result = 'Obese';
+        } else if (bmi >= 35) {
+            result = 'Extremely obese';
+        }
+
+        setBmiResult({ bmi, result });
+
+        setAge('');
+        setHeight('');
+        setWeight('');
+        setGender('');
+    };
+
+    return (
+        <View style={styles.container}>
+            <Text style={styles.header}>BMI Calculator</Text>
+            <View style={styles.form}>
+                <View style={styles.inputRow}>
+                    <Text style={styles.label}>Age</Text>
+                    <TextInput
+                        style={styles.textInput}
+                        placeholder="Enter your age"
+                        onChangeText={setAge}
+                        value={age}
+                        keyboardType="numeric"
+                    />
+                </View>
+                <View style={styles.inputRow}>
+                    <Text style={styles.label}>Height (cm)</Text>
+                    <TextInput
+                        style={styles.textInput}
+                        placeholder="Enter your height"
+                        onChangeText={setHeight}
+                        value={height}
+                        keyboardType="numeric"
+                    />
+                </View>
+                <View style={styles.inputRow}>
+                    <Text style={styles.label}>Weight (kg)</Text>
+                    <TextInput
+                        style={styles.textInput}
+                        placeholder="Enter your weight"
+                        onChangeText={setWeight}
+                        value={weight}
+                        keyboardType="numeric"
+                    />
+                </View>
+                <View style={styles.genderRow}>
+                    <TouchableOpacity
+                        style={[
+                            styles.genderButton,
+                            gender === 'male' && styles.selectedGender,
+                        ]}
+                        onPress={() => setGender('male')}
+                    >
+                        <Text style={styles.genderText}>Male</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={[
+                            styles.genderButton,
+                            gender === 'female' && styles.selectedGender,
+                        ]}
+                        onPress={() => setGender('female')}
+                    >
+                        <Text style={styles.genderText}>Female</Text>
+                    </TouchableOpacity>
+                </View>
+                <TouchableOpacity
+                    style={styles.submitButton}
+                    onPress={validateForm}
+                >
+                    <Text style={styles.submitButtonText}>
+                        Calculate BMI
+                    </Text>
+                </TouchableOpacity>
+                {bmiResult && (
+                    <View style={styles.resultContainer}>
+                        <Text style={styles.resultLabel}>
+                            BMI:
+                        </Text>
+                        <Text style={styles.resultText}>
+                            {bmiResult.bmi}
+                        </Text>
+                        <Text style={styles.resultLabel}>
+                            Result:
+                        </Text>
+                        <Text style={styles.resultText}>
+                            {bmiResult.result}
+                        </Text>
+                    </View>
+                )}
+            </View>
+        </View>
+    );
+};
+
+const styles = StyleSheet.create({});
+export default App;
+
+
+
+
+
+
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, TextInput, Button, FlatList, Picker } from 'react-native';
+
+const ExpenseItem = ({ expense }) => {
+  return (
+    <View>
+      <Text>{expense.date}</Text>
+      <Text>-${expense.amount.toFixed(2)}</Text>
+      <Text>{expense.category || 'Uncategorized'}</Text>
+    </View>
+  );
+};
+
+const App = () => {
+  const [transactions, setTransactions] = useState([]);
+  const [amount, setAmount] = useState('');
+  const [type, setType] = useState('expense');
+  const [category, setCategory] = useState('');
+  const [weeklyIncome, setWeeklyIncome] = useState(0);
+  const [showIncomeForm, setShowIncomeForm] = useState(true);
+  const [date, setDate] = useState(new Date().toLocaleDateString());
+  const [remainingBalance, setRemainingBalance] = useState(0);
+
+  useEffect(() => {
+    const totalExpenses = transactions.reduce((total, transaction) => {
+      if (transaction.type === 'expense') {
+        return total + transaction.amount;
+      }
+      return total;
+    }, 0);
+    const balance = weeklyIncome - totalExpenses;
+    setRemainingBalance(balance);
+  }, [transactions, weeklyIncome]);
+
+  const handleWeeklyIncomeSubmit = () => {
+    setWeeklyIncome(parseFloat(amount));
+    setAmount('');
+    setShowIncomeForm(false);
+  };
+
+  const handleTransactionSubmit = () => {
+    const newTransaction = {
+      id: transactions.length + 1,
+      amount: parseFloat(amount),
+      type,
+      category,
+      date,
+    };
+    setTransactions([...transactions, newTransaction]);
+    setAmount('');
+    setCategory('');
+    setDate(new Date().toLocaleDateString());
+  };
+
+  return (
+    <View>
+      <Text>Remaining Balance: ${remainingBalance.toFixed(2)}</Text>
+      
+      {showIncomeForm ? (
+        <View>
+          <Text>Enter Weekly Income</Text>
+          <TextInput
+            placeholder="Weekly Income"
+            value={amount}
+            onChangeText={setAmount}
+            keyboardType="numeric"
+          />
+          <Button title="Submit Weekly Income" onPress={handleWeeklyIncomeSubmit} />
+        </View>
+      ) : (
+        <View>
+          <Text>Add Expenses</Text>
+          <TextInput
+            placeholder="Amount"
+            value={amount}
+            onChangeText={setAmount}
+            keyboardType="numeric"
+          />
+          <Picker
+            selectedValue={category}
+            onValueChange={(itemValue) => setCategory(itemValue)}
+          >
+            <Picker.Item label="Select Category" value="" />
+            <Picker.Item label="Food" value="Food" />
+            <Picker.Item label="Travel" value="Travel" />
+            <Picker.Item label="Work" value="Work" />
+            <Picker.Item label="Personal" value="Personal" />
+            <Picker.Item label="Miscellaneous" value="Miscellaneous" />
+          </Picker>
+          <Button title="Add Expense" onPress={handleTransactionSubmit} />
+        </View>
+      )}
+
+      <FlatList
+        data={transactions}
+        renderItem={({ item }) => <ExpenseItem expense={item} />}
+        keyExtractor={(item) => item.id.toString()}
+      />
+    </View>
+  );
+};
+
+export default App;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import React, { useState } from 'react';
+import { View, Text, TextInput, Picker } from 'react-native';
+
+const App = () => {
+  const [inputValue, setInputValue] = useState('');
+  const [inputUnit, setInputUnit] = useState('miles');
+
+  const getOutputUnit = () => {
+    switch (inputUnit) {
+      case 'miles':
+        return 'km';
+      case 'pounds':
+        return 'kg';
+      case 'gallons':
+        return 'liters';
+      case 'fahrenheit':
+        return 'celsius';
+      default:
+        return '';
+    }
+  };
+
+  const getOutputUnitLabel = () => {
+    const outputUnit = getOutputUnit();
+    switch (outputUnit) {
+      case 'km':
+        return 'Kilometers';
+      case 'kg':
+        return 'Kilograms';
+      case 'liters':
+        return 'Liters';
+      case 'celsius':
+        return 'Celsius';
+      default:
+        return '';
+    }
+  };
+
+  const convertToMetric = () => {
+    switch (inputUnit) {
+      case 'miles':
+        return parseFloat(inputValue) * 1.60934;
+      case 'pounds':
+        return parseFloat(inputValue) * 0.453592;
+      case 'gallons':
+        return parseFloat(inputValue) * 3.78541;
+      case 'fahrenheit':
+        return ((parseFloat(inputValue) - 32) * 5) / 9;
+      default:
+        return 0;
+    }
+  };
+
+  const convertedValue = convertToMetric();
+  const outputUnit = getOutputUnit();
+
+  return (
+    <View>
+      <Text>Unit Converter</Text>
+      <View>
+        <TextInput
+          value={inputValue}
+          onChangeText={setInputValue}
+          keyboardType="numeric"
+          placeholder="Enter value"
+        />
+        <Picker
+          selectedValue={inputUnit}
+          onValueChange={setInputUnit}
+        >
+          <Picker.Item label="Miles" value="miles" />
+          <Picker.Item label="Pounds" value="pounds" />
+          <Picker.Item label="Gallons" value="gallons" />
+          <Picker.Item label="Fahrenheit" value="fahrenheit" />
+        </Picker>
+      </View>
+      <Text>Converted Value:</Text>
+      <Text>
+        {isNaN(convertedValue) ? '0' : convertedValue.toFixed(2)} {getOutputUnitLabel()}
+      </Text>
+    </View>
+  );
+};
+
+export default App;
+
+
+
+
+
+
+
+
+
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
+
+const App = () => {
+  const [task, setTask] = useState('');
+  const [tasks, setTasks] = useState([]);
+
+  const addTask = () => {
+    if (task.trim() === '') {
+      alert('Please enter a task');
+      return;
+    }
+    const newTask = { id: Date.now().toString(), task, completed: false };
+    setTasks([...tasks, newTask]);
+    setTask('');
+  };
+
+  const toggleTaskCompletion = (taskId) => {
+    const updatedTasks = tasks.map((t) =>
+      t.id === taskId ? { ...t, completed: !t.completed } : t
+    );
+    setTasks(updatedTasks);
+  };
+
+  const deleteTask = (taskId) => {
+    const updatedTasks = tasks.filter((t) => t.id !== taskId);
+    setTasks(updatedTasks);
+  };
+
+  return (
+    <View>
+      <Text>To-Do List</Text>
+     
+      <TextInput
+        placeholder="Enter task"
+        value={task}
+        onChangeText={setTask}
+      />
+     
+      <TouchableOpacity onPress={addTask}>
+        <Text>Add Task</Text>
+      </TouchableOpacity>
+
+      <View>
+        <FlatList
+          data={tasks}
+          renderItem={({ item }) => (
+            <View>
+              <TouchableOpacity onPress={() => toggleTaskCompletion(item.id)}>
+                <Text>{item.task}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => deleteTask(item.id)}>
+                <Text>Delete</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+          keyExtractor={(item) => item.id}
+        />
+      </View>
+    </View>
+  );
+};
+
+export default App;
+
+
+
+
+
+
+
+
+
+
+
+//index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Screen</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="login-container">
+    <div class="header">
+      <img src="img/img.jpg" alt="Header Image" class="header-img">
+    </div>
+    <div class="login-form">
+      <label for="username" class="label">Username:</label>
+      <input type="text" id="username" class="input" placeholder="Enter Username">     
+      <label for="password" class="label">Password:</label>
+      <input type="password" id="password" class="input" placeholder="Enter Password">     
+      <div class="buttons">
+        <button id="reset" class="reset-button">Reset</button>
+        <button id="submit" class="submit-button">Submit</button>
+      </div>         </div>  </div>
+  <script src="cordova.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
+
+//app.js
+
+document.addEventListener('deviceready', function() {
+    const usernameField = document.getElementById('username');
+    const passwordField = document.getElementById('password');
+    const resetButton = document.getElementById('reset');
+    const submitButton = document.getElementById('submit');
+
+    resetButton.addEventListener('click', function() {
+      usernameField.value = '';
+      passwordField.value = '';
+    });
+ 
+    submitButton.addEventListener('click', function() {
+      const username = usernameField.value;
+      const password = passwordField.value;
+     
+      if (username && password) {
+        alert('Login successful!');
+      } else {
+        alert('Please enter both username and password.');
+      }
+    });
+  });
+
+
+
+
+
+
+
+//index.html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Location App</title>
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h2 class="heading">Location App</h2>
+        <button class="button" onclick="getLocation()">Get Location</button>
+        <div id="location" class="location-info"></div>
+    </div>
+</body>
+</html>
+
+
+//index.js
+function getLocation() {
+    navigator.geolocation.getCurrentPosition(onSuccess, onError);}
+
+function onSuccess(position) {
+    var latitude = position.coords.latitude;
+    var longitude = position.coords.longitude;
+    document.getElementById('location').innerHTML = 'Latitude: ' + latitude + '<br>Longitude: ' + longitude;}
+
+function onError(error) {
+    alert('Error occurred. Code: ' + error.code + '\nMessage: ' + error.message);}
+
+
+
+
+
+
