@@ -1,0 +1,6 @@
+react_native/node_modules/
+cordova/myApp/node_modules/
+
+# Node modules
+node_modules/
+**/node_modules/
