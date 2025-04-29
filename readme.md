@@ -1,4 +1,6 @@
 
+---
+
 ## 📘 React Native App (Expo + Navigation)
 
 This is a React Native Expo project with **4 navigable screens**:  
@@ -27,17 +29,29 @@ yourproject/
 
 ## 🚀 Installation & Setup
 
-### 1. Create Expo Project
+### 1. Setup Environment
+To ensure a proper setup, run the following commands:
+
+```bash
+npm install create-expo-app
+npm install expo-cli
+npm install react-dom@18.3.1
+npm install react-native-web@~0.19.13
+```
+
+### 2. Create Expo Project
 ```bash
 npx create-expo-app yourproject
 cd yourproject
 ```
 
-### 2. Install Navigation Dependencies
+### 3. Install Navigation Dependencies
 ```bash
-npx expo install @react-navigation/native
-npx expo install react-native-screens react-native-safe-area-context react-native-gesture-handler react-native-reanimated
-npm install @react-navigation/native-stack
+npm install @react-navigation/native
+npm install @react-navigation/stack
+npm install react-native-screens react-native-safe-area-context
+npm install react-native-gesture-handler
+npm install react-native-reanimated
 ```
 
 ---
@@ -60,6 +74,6 @@ registerRootComponent(App);
 npx expo start
 ```
 
-Scan the QR code with Expo Go app on your phone.
+Scan the QR code with the Expo Go app on your phone.
 
 ---
